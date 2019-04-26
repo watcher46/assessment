@@ -16,7 +16,7 @@ LABEL maintainer="test@test.com"
 RUN apt-get update -y && \
     apt-get install -y unzip libzip-dev libxslt-dev libpq-dev git && \
     docker-php-ext-configure zip --with-libzip && \
-    docker-php-ext-install pdo xsl pdo_pgsql zip opcache && \
+    docker-php-ext-install pdo xsl pdo_mysql zip opcache && \
     docker-php-ext-enable opcache
 
 
