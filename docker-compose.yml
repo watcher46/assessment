@@ -1,0 +1,32 @@
+version: "3.6"
+
+services:
+  tweakers:
+    build:
+      context: .
+      dockerfile: .docker/Dockerfile
+      args:
+        - USER_ID=${USER_ID}
+    ports:
+      - 80:80
+      - 443:443
+    volumes:
+      - .:/var/www/html
+      - ./.docker/.certs:/var/www/certs
+    depends_on:
+      - db
+  db:
+    image: mysql:latest
+    volumes:
+      - db_data:/var/lib/mysql
+    restart: always
+    environment:
+      MYSQL_USER: tweakers-test
+      MYSQL_PASSWORD: test-tweakers
+  adminer:
+    image: adminer
+    restart: always
+    ports:
+      - 8080:8080
+volumes:
+  db_data: {}
