@@ -5,8 +5,6 @@ services:
     build:
       context: .
       dockerfile: .docker/Dockerfile
-      args:
-        - USER_ID=${USER_ID}
     ports:
       - 80:80
       - 443:443
@@ -16,11 +14,19 @@ services:
     depends_on:
       - db
   db:
-    image: mysql:latest
+    image: mysql:8
+    command:
+      - "--default-authentication-plugin=mysql_native_password"
     volumes:
-      - db_data:/var/lib/mysql
+      - database_data:/var/lib/mysql
     restart: always
+    ports:
+      - 3306:3306
+    expose:
+      - 3306
     environment:
+      MYSQL_ROOT_PASSWORD: hacker
+      MYSQL_DATABASE: tweakers
       MYSQL_USER: tweakers-test
       MYSQL_PASSWORD: test-tweakers
   adminer:
@@ -29,4 +35,4 @@ services:
     ports:
       - 8080:8080
 volumes:
-  db_data: {}
+  database_data: {}
