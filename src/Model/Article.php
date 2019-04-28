@@ -4,41 +4,33 @@ namespace Tweakers\Model;
 
 use PDO;
 use DateTime;
-use Tweakers\Model\CommentCollection;
 
 
-class Article
+class Article extends AbstractModel
 {
     /** @var string */
     protected $table = 'articles';
 
-    /** @var PDO */
-    protected $pdo;
-
     /** @var bool */
     protected $isFetched = false;
 
-    /** @var int */
-    protected $id;
+    /** @var string */
+    public $title;
 
     /** @var string */
-    protected $title;
-
-    /** @var string */
-    protected $description;
+    public $description;
 
     /** @var DateTime */
-    protected $dateCreated;
+    public $dateCreated;
 
     /** @var CommentCollection */
-    protected $comments;
+    public $comments;
 
     public function __construct(int $id, PDO $pdo)
     {
-        $this->id = $id;
-        $this->pdo = $pdo;
+        parent::__construct($id, $pdo);
 
-        if (!$this->fetchArticle($id)) {
+        if (!$this->fetchArticle()) {
             throw new \Exception("Article cannot be found.");
         }
 
@@ -52,14 +44,11 @@ class Article
         $this->comments = new CommentCollection($this->id);
     }
 
-    protected function fetchArticle(int $id): bool
+    protected function fetchArticle(): bool
     {
-        $stmt = $this->pdo->prepare("SELECT * FROM {$this->table} WHERE id=:id");
-        $stmt->execute(['id' => $id]);
-        $result = $stmt->fetch();
-        if (! $result) {
-            return false;
-        }
+        $result = $this->fetch();
+
+        if (!$result) { return false; }
 
         $this->title = $result['title'];
         $this->description = $result['description'];
