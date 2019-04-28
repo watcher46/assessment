@@ -5,14 +5,31 @@ ini_set( 'display_errors','1');
 include '../autoloader.php';
 
 use Tweakers\Database\Connection;
+use Tweakers\Model\Article;
 
 $host = 'db'; //only works when running in docker
 $username = 'tweakers-test';
 $password = 'test-tweakers';
 $database = 'tweakers';
 
-$connection = new Connection('db');
-$connection = $connection->setUsername($username)->setPassword($password)->setDb($database)->connect();
+try {
+    $connection = new Connection('db');
+    $connection = $connection
+        ->setUsername($username)
+        ->setPassword($password)
+        ->setDb($database)
+        ->connect()
+    ;
+} catch ( \Exception $exception) {
+    if ($exception->getCode() == 1045) {
+        die('Access denied.');
+    }
+    die('database connection failed.');
+}
 
-$query = $connection->query("SHOW TABLES")->execute();
-var_dump($query);
+$articleId = (int)$_GET['articleId'] ?: 1;
+
+$article = new Article($articleId, $connection);
+
+echo "<pre>";
+var_dump($article);
