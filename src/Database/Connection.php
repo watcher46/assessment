@@ -2,17 +2,34 @@
 
 namespace Tweakers\Database;
 
+use PDO;
+
 class Connection
 {
+    /** @var string */
     const DRIVER = "mysql";
 
     /** @var string */
     protected $host;
+
+    /** @var string */
     protected $username;
+
+    /** @var string */
     protected $password;
+
+    /** @var string */
     protected $charset = 'utf8';
+
+    /** @var string */
     protected $db;
 
+    /**
+     * Connection constructor.
+     *
+     * @param string $host
+     * @throws \Exception
+     */
     public function __construct(string $host)
     {
         if (!$host) {
@@ -22,13 +39,13 @@ class Connection
         $this->host = $host;
     }
 
-    public function connect(): \PDO
+    public function connect(): PDO
     {
         if(!$this->host || !$this->username || !$this->password || !$this->db) {
             throw new \Exception('Not all credentials where given.');
         }
 
-        return new \PDO($this->generateDsn(), $this->username, $this->password);
+        return new PDO($this->generateDsn(), $this->username, $this->password);
     }
 
     public function setUsername(string $username): Connection
