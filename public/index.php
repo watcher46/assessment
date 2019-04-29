@@ -4,8 +4,8 @@ ini_set( 'display_errors','1');
 
 include '../autoloader.php';
 
-use Tweakers\Database\Connection;
 use Tweakers\Model\Article;
+use Tweakers\Model\User;
 
 $host = 'db'; //only works when running in docker
 $username = 'tweakers-test';
@@ -13,14 +13,12 @@ $password = 'test-tweakers';
 $database = 'tweakers';
 
 try {
-    $connection = new Connection('db');
-    $connection = $connection
-        ->setUsername($username)
-        ->setPassword($password)
-        ->setDb($database)
-        ->connect()
-    ;
-} catch ( \Exception $exception) {
+    $connection = new PDO(
+        "mysql:host={$host};dbname={$database};charset=utf8;",
+        $username,
+        $password
+    );
+} catch ( PDOException $exception) {
     if ($exception->getCode() == 1045) {
         die('Access denied.');
     }
@@ -30,6 +28,7 @@ try {
 $articleId = (int)$_GET['articleId'] ?: 1;
 
 $article = new Article($articleId, $connection);
+$user = new User(1, $connection);
 
 echo "<pre>";
-var_dump($article);
+var_dump($article, $user);
