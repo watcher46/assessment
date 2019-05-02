@@ -28,7 +28,7 @@ if (is_null($parentCommentId)) {
     $adapter->setArticleId($tree->root_node_id, $articleId);
     $adapter->setUserId($tree->root_node_id, $userId);
 
-    echo 'Nieuw comment geplaatst onder artikel met id: '. $articleId;
+    echo 'Nieuw comment geplaatst onder artikel';
     die;
 }
 
@@ -39,7 +39,7 @@ $commentData = [
 ];
 $comment = new Comment($commentData);
 if ($adapter->addChild($parentCommentId, $comment)) {
-    echo 'Nieuw commentaar geplaatst onder parent commenteraar met id: ' . $parentCommentId;
+    echo 'Nieuw commentaar geplaatst onder een ander commentaar met id: ' . $parentCommentId;
 } else {
     echo 'Toevoegen is niet gelukt.';
 }
