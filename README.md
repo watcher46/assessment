@@ -1,4 +1,4 @@
-#Technical Assessment
+# Technical Assessment
 
-##Installation
+## Installation
 - First follow the steps in the `.docker/README.md` file. 

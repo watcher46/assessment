@@ -68,12 +68,12 @@ This will start a development server in the background. Make sure your local dom
 name is registered in `/etc/hosts`:
 ```sh
 # Docker for Mac
-localhost  cms-frontend.xs4all.test
+localhost  comments.tweakers.test
 # Docker Toolbox
-192.168.99.100  cms-frontend.xs4all.test 
+192.168.99.100  comments.tweakers.test 
 ```
 
-Your development environment should now be available on `https://cms-frontend.xs4all.test`
+Your development environment should now be available on `https://comments.tweakers.test`
 
 ## Known issues
 At the moment, the `www-data` user in the Apache container has a hardcoded ID of `502`.
