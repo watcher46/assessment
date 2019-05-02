@@ -2,17 +2,24 @@
 
 namespace Tweakers\Model;
 
+use Tweakers\NestedSet\Adapter\AdapterInterface;
 use PDO;
 use DateTime;
 
 
-class Article extends AbstractModel
+class Article
 {
     /** @var string */
     protected $table = 'articles';
 
+    /** @var PDO */
+    protected $pdo;
+
     /** @var bool */
     protected $isFetched = false;
+
+    /** @var int */
+    protected $id;
 
     /** @var string */
     public $title;
@@ -28,31 +35,26 @@ class Article extends AbstractModel
 
     public function __construct(int $id, PDO $pdo)
     {
-        parent::__construct($id, $pdo);
-
+        $this->pdo = $pdo;
+        $this->id = $id;
         if (!$this->fetchArticle()) {
             throw new \Exception("Article cannot be found.");
         }
-
-        $this->isFetched = true;
-    }
-
-    public function getComments()
-    {
-        if (! $this->isFetched) { return; }
-
-        $this->comments = new CommentCollection($this->id);
     }
 
     protected function fetchArticle(): bool
     {
-        $result = $this->fetch();
-
-        if (!$result) { return false; }
+        $stmt = $this->pdo->prepare("SELECT * FROM {$this->table} WHERE id=:id");
+        $stmt->execute(['id' => $this->id]);
+        $result = $stmt->fetch();
+        if (! $result) {
+            return false;
+        }
 
         $this->title = $result['title'];
         $this->description = $result['description'];
-        $this->dateCreated = new DateTime($result['date_created']);
+        $dateCreated = new DateTime($result['date_created']);
+        $this->dateCreated = $dateCreated->format('d-m-Y H:i:s');
 
         return true;
     }

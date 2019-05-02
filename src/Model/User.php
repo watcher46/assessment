@@ -2,35 +2,14 @@
 
 namespace Tweakers\Model;
 
-use PDO;
-
-class User extends AbstractModel
+class User
 {
-
-    protected $table = 'users';
-
-    protected $isFetched = false;
-
+    protected $id;
     public $name;
 
-    public function __construct(int $id, PDO $pdo)
+    public function __construct(int $id, string $name)
     {
-        parent::__construct($id, $pdo);
-
-        if (!$this->fetchUser()) {
-            throw new \Exception("User cannot be found.");
-        }
-
-        $this->isFetched = true;
-    }
-
-    public function fetchUser()
-    {
-        $user = $this->fetch();
-
-        if (!$user) { return false; }
-
-        $this->name = $user['name'];
-        return true;
+        $this->id = $id;
+        $this->name = $name;
     }
 }
