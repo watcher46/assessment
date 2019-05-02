@@ -170,6 +170,20 @@ EOD;
     }
 
     /**
+     * @param int $nodeId
+     * @param string $description
+     * @return bool
+     */
+    public function setDescription(int $nodeId, string $description): bool
+    {
+        $stmt = $this->db->prepare("update {$this->tablePrefix} set description = :description where id = :id");
+        return $stmt->execute([
+            ':id' => $nodeId,
+            ':description' => $description,
+        ]);
+    }
+
+    /**
      * @param int $parentId
      * @param Node $child
      * @return bool
