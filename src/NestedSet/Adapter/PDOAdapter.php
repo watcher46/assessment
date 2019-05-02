@@ -43,7 +43,7 @@ class PDOAdapter implements AdapterInterface
     private function insertNode(Node $node): bool
     {
         $sql = <<<EOD
-insert into {$this->tablePrefix}node (tree_id, lft, rgt, data, depth)
+insert into {$this->tablePrefix} (tree_id, lft, rgt, data, depth)
 values (:tree_id, :left, :right, :data, :depth)
 EOD;
         $stmt = $this->db->prepare($sql);
@@ -69,7 +69,7 @@ EOD;
     private function resizeAt(int $position, int $treeId, int $value): bool
     {
         $sql = <<<EOD
-update {$this->tablePrefix}node
+update {$this->tablePrefix}
 set
     lft = (select case when lft > :position_1 then lft + :value_1 else lft end),
     rgt = (select case when rgt > :position_2 then rgt + :value_2 else rgt end)
@@ -92,7 +92,7 @@ EOD;
      */
     public function getNode(int $id): Node
     {
-        $stmt = $this->db->prepare("select * from {$this->tablePrefix}node where node_id = :id");
+        $stmt = $this->db->prepare("select * from {$this->tablePrefix} where id = :id");
         $stmt->execute([':id' => $id]);
         $data = $stmt->fetch(PDO::FETCH_ASSOC);
         if (empty($data)) {
@@ -109,7 +109,7 @@ EOD;
     {
         $node = $this->getNode($nodeId);
         $sql = <<<EOD
-delete from {$this->tablePrefix}node
+delete from {$this->tablePrefix}
 where lft >= :left
 and rgt <= :right
 and tree_id = :tree_id
@@ -134,7 +134,7 @@ EOD;
      */
     public function setData(int $nodeId, string $data): bool
     {
-        $stmt = $this->db->prepare("update {$this->tablePrefix}node set data = :data where node_id = :id");
+        $stmt = $this->db->prepare("update {$this->tablePrefix} set description = :data where id = :id");
         return $stmt->execute([
             ':id' => $nodeId,
             ':data' => $data,
@@ -169,7 +169,7 @@ EOD;
         $parent = $this->getNode($nodeId);
         $sql = <<<EOD
 select *
-from {$this->tablePrefix}node
+from {$this->tablePrefix}
 where lft > :left
     and rgt < :right
     and tree_id = :tree_id
@@ -199,7 +199,7 @@ EOD;
         $parent = $this->getNode($nodeId);
         $sql = <<<EOD
 select *
-from {$this->tablePrefix}node
+from {$this->tablePrefix}
 where lft > :left
     and rgt < :right
     and tree_id = :tree_id
@@ -224,7 +224,7 @@ EOD;
      */
     public function createTree(string $name): Tree
     {
-        $stmt = $this->db->prepare("insert into {$this->tablePrefix}tree (name) values (:name)");
+        $stmt = $this->db->prepare("insert into {$this->tablePrefix}_tree (name) values (:name)");
         $stmt->execute([':name' => $name]);
         $last = $this->db->lastInsertId();
         $rootNode = new Node([
@@ -243,7 +243,7 @@ EOD;
      */
     public function getTree(int $id): Tree
     {
-        $stmt = $this->db->prepare("select * from {$this->tablePrefix}tree where tree_id = :id");
+        $stmt = $this->db->prepare("select * from {$this->tablePrefix}_tree where tree_id = :id");
         $stmt->execute([
             ':id' => $id
         ]);
@@ -256,7 +256,7 @@ EOD;
         // find the root node
         $sql = <<<EOD
 select node_id
-from {$this->tablePrefix}node
+from {$this->tablePrefix}
 where depth = :depth
 and tree_id = :tree_id
 EOD;
@@ -289,7 +289,7 @@ EOD;
 
         // use the deltas to move the node and its children to the parent
         $sql = <<<EOD
-update {$this->tablePrefix}node
+update {$this->tablePrefix}
 set
     lft = lft + :move_delta_1,
     rgt = rgt + :move_delta_2,
