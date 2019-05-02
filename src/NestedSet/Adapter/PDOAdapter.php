@@ -43,8 +43,8 @@ class PDOAdapter implements AdapterInterface
     private function insertNode(Node $node): bool
     {
         $sql = <<<EOD
-insert into {$this->tablePrefix} (tree_id, lft, rgt, depth, date_created)
-values (:tree_id, :left, :right, :depth, now())
+insert into {$this->tablePrefix} (tree_id, lft, rgt, depth, date_created, article_id, user_id, description)
+values (:tree_id, :left, :right, :depth, now(), :article_id, :user_id, :description)
 EOD;
         $stmt = $this->db->prepare($sql);
         $res = $stmt->execute([
@@ -52,6 +52,9 @@ EOD;
             ':left' => $node->lft,
             ':right' => $node->rgt,
             ':depth' => $node->depth,
+            ':article_id' => $node->article_id,
+            ':user_id' => $node->user_id,
+            ':description' => $node->description,
         ]);
         $node->node_id = $this->db->lastInsertId();
         return $res;
@@ -241,9 +244,10 @@ EOD;
         $sql = <<<EOD
 select *
 from {$this->tablePrefix}
-where lft > :left
-    and rgt < :right
+where lft >= :left
+    and rgt <= :right
     and tree_id = :tree_id
+order by lft ASC
 EOD;
 
         $stmt = $this->db->prepare($sql);
@@ -296,7 +300,7 @@ EOD;
 
         // find the root node
         $sql = <<<EOD
-select node_id
+select id
 from {$this->tablePrefix}
 where depth = :depth
 and tree_id = :tree_id
@@ -310,6 +314,76 @@ EOD;
         $tree->root_node_id = $rootId;
         return $tree;
     }
+
+    /**
+     * Every root comment on an article is a new tree
+     * Therefore to render all comments for an article, all trees related to the article must be rendered
+     *
+     * @param int $articleId
+     * @return array
+     */
+    public function getAllTreesFromArticle(int $articleId)
+    {
+        $sql = <<<EOD
+select c.id
+from {$this->tablePrefix} as c
+left join {$this->tablePrefix}_tree as ct ON c.tree_id = ct.tree_id
+where c.article_id = :article_id
+and c.depth = :depth
+order by date_created asc
+EOD;
+
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute([
+            ':depth' => Node::INITIAL_DEPTH,
+            ':article_id' => $articleId
+        ]);
+
+        $rootCommentIds = $stmt->fetchAll();
+        if (empty($rootCommentIds)) {
+            throw new \RuntimeException("Trees with article id {$articleId} not found");
+        }
+
+        $trees = [];
+        foreach($rootCommentIds as $row) {
+            $trees[] = $this->getAllChildren($row['id']);
+        }
+
+        return $trees;
+    }
+
+    public function makeTree( array $tree, $css_class='comments')
+    {
+        $result = "<ul class=\"{$css_class}\">";
+        $currDepth = 0;
+
+        /** @var Node $node */
+        foreach( $tree as $node )
+        {
+            if($node->depth > $currDepth)
+            {
+                $result .= "<li><ul>"; // open sub tree if level up
+            }
+
+            if($node->depth < $currDepth)
+            {
+                $result .= str_repeat("</ul></li>", $currDepth - $node->depth); // close sub tree if level down
+            }
+
+            $result .= "<li class=\"comment\">{$node->description}</li>";
+            $currDepth = $node->depth;
+        }
+
+        if ($currDepth > 0) {
+            while($currDepth > 0) {
+                $result .= "</ul>";
+                $currDepth--;
+            }
+        }
+
+        $result .= "</ul>";
+        return $result;
+    } // end of func
 
     /**
      * @param int $nodeId

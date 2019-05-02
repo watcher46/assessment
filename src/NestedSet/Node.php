@@ -19,7 +19,7 @@ class Node extends Model
     /**
      * @var int
      */
-    public $node_id;
+    public $id;
 
     /**
      * @var int
@@ -48,6 +48,18 @@ class Node extends Model
      * @var int
      */
     public $depth;
+
+    /** @var int */
+    public $article_id;
+
+    /** @var int */
+    public $user_id;
+
+    /** @var string */
+    public $description;
+
+    /** @var string */
+    public $date_created;
 
     /**
      * @return int
