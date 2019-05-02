@@ -242,8 +242,9 @@ EOD;
     {
         $parent = $this->getNode($nodeId);
         $sql = <<<EOD
-select *
-from {$this->tablePrefix}
+select c.*, u.name as user_name
+from {$this->tablePrefix} c
+left join users as u on c.user_id = u.id
 where lft >= :left
     and rgt <= :right
     and tree_id = :tree_id
@@ -362,26 +363,38 @@ EOD;
         {
             if($node->depth > $currDepth)
             {
-                $result .= "<li><ul>"; // open sub tree if level up
+                $result .= "<ul>"; // open sub tree if level up
+            } elseif($node->depth > 0) {
+                $result .= '</li>';
             }
 
-            if($node->depth < $currDepth)
-            {
-                $result .= str_repeat("</ul></li>", $currDepth - $node->depth); // close sub tree if level down
+            if($node->depth < $currDepth) {
+                $result .= str_repeat("</ul>", $currDepth - $node->depth); // close sub tree if level down
             }
 
-            $result .= "<li class=\"comment\">{$node->description}</li>";
+            $commentCreated = new \DateTime($node->date_created);
+            $comment = "
+                <div class=\"comment-body\">
+                    <header>
+                        <span class='username'>{$node->user_name}</span>
+                        <span class='date'>geplaatst op: {$commentCreated->format('d-m-Y H:i')}</span>
+                        <span class='id'>id: {$node->id}</span>
+                    </header>
+                    <section>{$node->description}</section>
+                </div>
+            ";
+
+            $result .= "<li class=\"comment\">{$comment}";
             $currDepth = $node->depth;
         }
 
         if ($currDepth > 0) {
-            while($currDepth > 0) {
-                $result .= "</ul>";
+            while($currDepth >= 0) {
+                $result .= "</li></ul>";
                 $currDepth--;
             }
         }
 
-        $result .= "</ul>";
         return $result;
     } // end of func
 

@@ -56,6 +56,9 @@ class Node extends Model
     public $user_id;
 
     /** @var string */
+    public $user_name;
+
+    /** @var string */
     public $description;
 
     /** @var string */
