@@ -43,16 +43,15 @@ class PDOAdapter implements AdapterInterface
     private function insertNode(Node $node): bool
     {
         $sql = <<<EOD
-insert into {$this->tablePrefix} (tree_id, lft, rgt, data, depth)
-values (:tree_id, :left, :right, :data, :depth)
+insert into {$this->tablePrefix} (tree_id, lft, rgt, depth, date_created)
+values (:tree_id, :left, :right, :depth, now())
 EOD;
         $stmt = $this->db->prepare($sql);
         $res = $stmt->execute([
             ':tree_id' => $node->tree_id,
             ':left' => $node->lft,
             ':right' => $node->rgt,
-            ':data' => $node->data,
-            ':depth' => $node->depth
+            ':depth' => $node->depth,
         ]);
         $node->node_id = $this->db->lastInsertId();
         return $res;
@@ -273,7 +272,7 @@ EOD;
             'lft' => Node::INITIAL_LEFT,
             'rgt' => Node::INITIAL_RIGHT,
             'depth' => Node::INITIAL_DEPTH,
-            'tree_id' => $last
+            'tree_id' => $last,
         ]);
         $this->insertNode($rootNode);
         return $this->getTree($last);
