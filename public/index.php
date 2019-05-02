@@ -2,33 +2,55 @@
 error_reporting(E_ALL);
 ini_set( 'display_errors','1');
 
+// include the autoloader so we don't have to include the class-files by hand
 include '../autoloader.php';
 
+// vars $pdoConnection & $adapter are available
+include 'connection.php';
+
 use Tweakers\Model\Article;
-use Tweakers\Model\User;
-
-$host = 'db'; //only works when running in docker
-$username = 'tweakers-test';
-$password = 'test-tweakers';
-$database = 'tweakers';
-
-try {
-    $connection = new PDO(
-        "mysql:host={$host};dbname={$database};charset=utf8;",
-        $username,
-        $password
-    );
-} catch ( PDOException $exception) {
-    if ($exception->getCode() == 1045) {
-        die('Access denied.');
-    }
-    die('database connection failed.');
-}
 
 $articleId = (int)$_GET['articleId'] ?: 1;
 
-$article = new Article($articleId, $connection);
-$user = new User(1, $connection);
+$article = new Article($articleId, $pdoConnection);
 
-echo "<pre>";
-var_dump($article, $user);
+
+$trees = $adapter->getAllTreesFromArticle($articleId);
+echo '<pre>';
+
+print_r($trees);
+echo '</pre>';
+?>
+
+<html>
+<head>
+    <style>
+        .comments li {
+            list-style: none;
+        }
+
+        .comments li.comment {
+            list-style: disc;
+        }
+    </style>
+</head>
+<body>
+    <div class="wrapper">
+        <article>
+            <header class="title"><?php echo htmlspecialchars($article->title);?></header>
+            <section class="description"><?php echo htmlspecialchars($article->description);?></section>
+            <section>
+                <header class="sort"></header>
+                <main>
+                    <?php
+                        foreach($trees as $key => $tree) {
+                            echo $key;
+                            echo $adapter->makeTree($tree);
+                        }
+                    ?>
+                </main>
+            </section>
+        </article>
+    </div>
+</body>
+</html>
