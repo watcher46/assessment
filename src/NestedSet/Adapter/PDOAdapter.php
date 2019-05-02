@@ -156,6 +156,20 @@ EOD;
     }
 
     /**
+     * @param int $nodeId
+     * @param int $userId
+     * @return bool
+     */
+    public function setUserId(int $nodeId, int $userId): bool
+    {
+        $stmt = $this->db->prepare("update {$this->tablePrefix} set user_id = :user_id where id = :id");
+        return $stmt->execute([
+            ':id' => $nodeId,
+            ':user_id' => $userId,
+        ]);
+    }
+
+    /**
      * @param int $parentId
      * @param Node $child
      * @return bool
