@@ -142,6 +142,20 @@ EOD;
     }
 
     /**
+     * @param int $nodeId
+     * @param int $articleId
+     * @return bool
+     */
+    public function setArticleId(int $nodeId, int $articleId): bool
+    {
+        $stmt = $this->db->prepare("update {$this->tablePrefix} set article_id = :article_id where id = :id");
+        return $stmt->execute([
+            ':id' => $nodeId,
+            ':article_id' => $articleId,
+        ]);
+    }
+
+    /**
      * @param int $parentId
      * @param Node $child
      * @return bool
