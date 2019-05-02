@@ -13,38 +13,25 @@ use Tweakers\Model\Article;
 $articleId = (int)$_GET['articleId'] ?: 1;
 
 $article = new Article($articleId, $pdoConnection);
-
-
 $trees = $adapter->getAllTreesFromArticle($articleId);
-echo '<pre>';
-
-print_r($trees);
-echo '</pre>';
 ?>
 
 <html>
 <head>
-    <style>
-        .comments li {
-            list-style: none;
-        }
-
-        .comments li.comment {
-            list-style: disc;
-        }
-    </style>
+    <title><?php echo htmlspecialchars($article->title);?> - Tweakers</title>
+    <link rel="stylesheet" type="text/css" href="styles.css" />
 </head>
 <body>
     <div class="wrapper">
-        <article>
-            <header class="title"><?php echo htmlspecialchars($article->title);?></header>
+        <article class="content">
+            <header class="title"><h1><?php echo htmlspecialchars($article->title);?></h1></header>
             <section class="description"><?php echo htmlspecialchars($article->description);?></section>
             <section>
                 <header class="sort"></header>
                 <main>
+                    <h2>Reacties:</h2>
                     <?php
                         foreach($trees as $key => $tree) {
-                            echo $key;
                             echo $adapter->makeTree($tree);
                         }
                     ?>
