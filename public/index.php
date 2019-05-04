@@ -30,11 +30,56 @@ $trees = $adapter->getAllTreesFromArticle($articleId);
                 <header class="sort"></header>
                 <main>
                     <h2>Reacties:</h2>
-                    <?php
-                        foreach($trees as $key => $tree) {
-                            echo $adapter->makeTree($tree);
-                        }
-                    ?>
+                    <?php foreach($trees as $key => $tree): ?>
+                        <ul class="comments">
+                        <?php
+                            $result = '';
+                            $currDepth = 0;
+
+                            /** @var \Tweakers\NestedSet\Node $node */
+                            foreach( $tree as $node ) {
+                                if ($node->depth > $currDepth) {
+                                    $result .= "<ul>";
+                                } elseif($node->depth > 0) {
+                                    $result .= '</li>';
+                                }
+
+                                if ($node->depth < $currDepth) {
+                                    $result .= str_repeat("</ul>", $currDepth - $node->depth); // close sub tree if level down
+                                }
+
+                                $commentCreated = new \DateTime($node->date_created);
+                                $comment = "
+                                    <div class=\"comment-body\">
+                                        <header>
+                                            <span class='username'>{$node->user_name}</span>
+                                            <span class='date'>geplaatst op: {$commentCreated->format('d-m-Y H:i')}</span>
+                                            <span class='rating'>
+                                                <button class='rate min-one'>-1</button>
+                                                <button class='rate zero'>0</button>
+                                                <button class='rate plus-one'>+1</button>
+                                                <button class='rate plus-two'>+2</button>
+                                                <button class='rate plus-three'>+3</button>
+                                                <span class='average'>Score:</span>
+                                            </span>
+                                            <span class='id'>id: {$node->id}</span>
+                                        </header>
+                                        <section>{$node->description}</section>
+                                    </div>
+                                ";
+
+                                $result .= "<li class=\"comment\">{$comment}";
+                                $currDepth = $node->depth;
+                            }
+
+                            if ($currDepth > 0) {
+                                while($currDepth >= 0) {
+                                    $result .= "</li></ul>";
+                                    $currDepth--;
+                                }
+                            }
+                        ?>
+                   <?php endforeach; ?>
                 </main>
             </section>
         </article>
