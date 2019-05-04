@@ -33,19 +33,18 @@ $trees = $adapter->getAllTreesFromArticle($articleId);
                     <?php foreach($trees as $key => $tree): ?>
                         <ul class="comments">
                         <?php
-                            $result = '';
                             $currDepth = 0;
 
                             /** @var \Tweakers\NestedSet\Node $node */
                             foreach( $tree as $node ) {
                                 if ($node->depth > $currDepth) {
-                                    $result .= "<ul>";
+                                    echo '<ul>';
                                 } elseif($node->depth > 0) {
-                                    $result .= '</li>';
+                                    echo '</li>';
                                 }
 
                                 if ($node->depth < $currDepth) {
-                                    $result .= str_repeat("</ul>", $currDepth - $node->depth); // close sub tree if level down
+                                    echo str_repeat("</ul>", $currDepth - $node->depth); // close sub tree if level down
                                 }
 
                                 $commentCreated = new \DateTime($node->date_created);
@@ -68,13 +67,13 @@ $trees = $adapter->getAllTreesFromArticle($articleId);
                                     </div>
                                 ";
 
-                                $result .= "<li class=\"comment\">{$comment}";
+                                echo "<li class=\"comment\">{$comment}";
                                 $currDepth = $node->depth;
                             }
 
                             if ($currDepth > 0) {
                                 while($currDepth >= 0) {
-                                    $result .= "</li></ul>";
+                                    echo "</li></ul>";
                                     $currDepth--;
                                 }
                             }
