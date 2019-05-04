@@ -3,10 +3,10 @@ error_reporting(E_ALL);
 ini_set( 'display_errors','1');
 
 // include the autoloader so we don't have to include the class-files by hand
-include '../autoloader.php';
+include '../../autoloader.php';
 
 // vars $pdoConnection & $adapter are available
-include 'connection.php';
+include '../connection.php';
 
 use Tweakers\NestedSet\Node as Comment;
 

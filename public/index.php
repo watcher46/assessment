@@ -19,7 +19,7 @@ $trees = $adapter->getAllTreesFromArticle($articleId);
 <html>
 <head>
     <title><?php echo htmlspecialchars($article->title);?> - Tweakers</title>
-    <link rel="stylesheet" type="text/css" href="styles.css" />
+    <link rel="stylesheet" type="text/css" href="assets/tweakers.css" />
 </head>
 <body>
     <div class="wrapper">
@@ -47,19 +47,20 @@ $trees = $adapter->getAllTreesFromArticle($articleId);
                                     echo str_repeat("</ul>", $currDepth - $node->depth); // close sub tree if level down
                                 }
 
+                                $averageScore = ceil($node->average_score);
                                 $commentCreated = new \DateTime($node->date_created);
                                 $comment = "
                                     <div class=\"comment-body\">
                                         <header>
                                             <span class='username'>{$node->user_name}</span>
                                             <span class='date'>geplaatst op: {$commentCreated->format('d-m-Y H:i')}</span>
-                                            <span class='rating'>
-                                                <button class='rate min-one'>-1</button>
-                                                <button class='rate zero'>0</button>
-                                                <button class='rate plus-one'>+1</button>
-                                                <button class='rate plus-two'>+2</button>
-                                                <button class='rate plus-three'>+3</button>
-                                                <span class='average'>Score:</span>
+                                            <span data-comment-id='{$node->id}' class='rating'>
+                                                <button data-rating='-1' class='rate min-one'>-1</button>
+                                                <button data-rating='0' class='rate zero'>0</button>
+                                                <button data-rating='1' class='rate plus-one'>+1</button>
+                                                <button data-rating='2' class='rate plus-two'>+2</button>
+                                                <button data-rating='3' class='rate plus-three'>+3</button>
+                                                <span class='average'>Score: {$averageScore}</span>
                                             </span>
                                             <span class='id'>id: {$node->id}</span>
                                         </header>
@@ -83,5 +84,6 @@ $trees = $adapter->getAllTreesFromArticle($articleId);
             </section>
         </article>
     </div>
+    <script type="text/javascript" src="assets/tweakers.js"></script>
 </body>
 </html>
