@@ -353,51 +353,6 @@ EOD;
         return $trees;
     }
 
-    public function makeTree( array $tree, $css_class='comments')
-    {
-        $result = "<ul class=\"{$css_class}\">";
-        $currDepth = 0;
-
-        /** @var Node $node */
-        foreach( $tree as $node )
-        {
-            if($node->depth > $currDepth)
-            {
-                $result .= "<ul>"; // open sub tree if level up
-            } elseif($node->depth > 0) {
-                $result .= '</li>';
-            }
-
-            if($node->depth < $currDepth) {
-                $result .= str_repeat("</ul>", $currDepth - $node->depth); // close sub tree if level down
-            }
-
-            $commentCreated = new \DateTime($node->date_created);
-            $comment = "
-                <div class=\"comment-body\">
-                    <header>
-                        <span class='username'>{$node->user_name}</span>
-                        <span class='date'>geplaatst op: {$commentCreated->format('d-m-Y H:i')}</span>
-                        <span class='id'>id: {$node->id}</span>
-                    </header>
-                    <section>{$node->description}</section>
-                </div>
-            ";
-
-            $result .= "<li class=\"comment\">{$comment}";
-            $currDepth = $node->depth;
-        }
-
-        if ($currDepth > 0) {
-            while($currDepth >= 0) {
-                $result .= "</li></ul>";
-                $currDepth--;
-            }
-        }
-
-        return $result;
-    } // end of func
-
     /**
      * @param int $nodeId
      * @param int $targetParent
