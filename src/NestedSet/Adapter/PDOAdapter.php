@@ -242,12 +242,14 @@ EOD;
     {
         $parent = $this->getNode($nodeId);
         $sql = <<<EOD
-select c.*, u.name as user_name
+select c.*, u.name as user_name, AVG(cs.score) as average_score
 from {$this->tablePrefix} c
 left join users as u on c.user_id = u.id
+left join {$this->tablePrefix}_score as cs on c.id = cs.comment_id
 where lft >= :left
     and rgt <= :right
     and tree_id = :tree_id
+group by c.id
 order by lft ASC
 EOD;
 
@@ -340,14 +342,14 @@ EOD;
             ':article_id' => $articleId
         ]);
 
-        $rootCommentIds = $stmt->fetchAll();
+        $rootCommentIds = $stmt->fetchAll(PDO::FETCH_COLUMN);
         if (empty($rootCommentIds)) {
             throw new \RuntimeException("Trees with article id {$articleId} not found");
         }
 
         $trees = [];
-        foreach($rootCommentIds as $row) {
-            $trees[] = $this->getAllChildren($row['id']);
+        foreach($rootCommentIds as $id) {
+            $trees[] = $this->getAllChildren($id);
         }
 
         return $trees;
@@ -395,5 +397,35 @@ EOD;
         $r3 = $this->resizeAt($node->rgt, $node->tree_id, -$growth);
 
         return $r1 && $r2 && $r3;
+    }
+
+    public function setScore(int $rating, int $commentId)
+    {
+        $sql = <<<EOD
+insert into {$this->tablePrefix}_score
+set
+    comment_id = :comment_id,
+    score = :score
+EOD;
+        $stmt = $this->db->prepare($sql);
+
+        $stmt->execute([
+            ':comment_id' => $commentId,
+            ':score' => $rating,
+        ]);
+
+        //after adding the new score, return the new average
+
+        $sql = <<<EOD
+select AVG(score) as score from {$this->tablePrefix}_score where comment_id = :comment_id group by comment_id
+EOD;
+        $stmt = $this->db->prepare($sql);
+
+        $stmt->execute([':comment_id' => $commentId]);
+
+        $row = $stmt->fetchColumn();
+
+        return ceil($row);
+
     }
 }

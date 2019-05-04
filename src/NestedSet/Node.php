@@ -64,6 +64,9 @@ class Node extends Model
     /** @var string */
     public $date_created;
 
+    /** @var int */
+    public $average_score;
+
     /**
      * @return int
      */
