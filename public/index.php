@@ -37,8 +37,8 @@ try {
             <section>
                 <header class="sort">
                     <div>Sorteer threads op:</div>
-                    <button data-sort-type="desc" id="sort_ascending">Oudste eerst</button>
-                    <button data-sort-type="asc" id="sort_descending">Nieuwste eerst</button>
+                    <a href="/index.php/?articleId=<?php echo $_GET['articleId'];?>&sort=asc">Oudste eerst</a>
+                    <a href="/index.php/?articleId=<?php echo $_GET['articleId'];?>&sort=desc">Nieuwste eerst</a>
                 </header>
                 <main>
                     <h2>Reacties:</h2>

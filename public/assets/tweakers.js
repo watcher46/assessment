@@ -29,25 +29,8 @@ const saveRating = function(rating, commentId) {
     return fetch('/ajax/save_rating.php', options).then(response => response.json())
 };
 
-const sortComments = function () {
-    const newSort = this.getAttribute('data-sort-type');
-    const urlParams = new URLSearchParams(window.location.search);
-    const articleId = urlParams.get('articleId');
-    let currentSort = urlParams.get('sort');
-
-    currentSort = newSort;
-
-    window.location = "/index.php?articleId=" + articleId + "&sort=" + currentSort;
-};
-
 //add click-event listener on all the .rate-classes
 let ratingButton = document.getElementsByClassName('rate');
 Array.from(ratingButton).forEach(function(element) {
     element.addEventListener('click', rateComment);
 });
-
-//sort comments by newest comment-thread
-const sortAscButton = document.getElementById('sort_ascending');
-const sortDescButton = document.getElementById('sort_descending');
-sortAscButton.addEventListener('click', sortComments);
-sortDescButton.addEventListener('click', sortComments);
