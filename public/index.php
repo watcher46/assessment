@@ -6,7 +6,7 @@ ini_set( 'display_errors','1');
 include '../autoloader.php';
 
 // vars $pdoConnection & $adapter are available
-include 'connection.php';
+include '../connection.php';
 
 use Tweakers\Model\Article;
 
@@ -37,8 +37,8 @@ try {
             <section>
                 <header class="sort">
                     <div>Sorteer threads op:</div>
-                    <a href="/index.php/?articleId=<?php echo $_GET['articleId'];?>&sort=asc">Oudste eerst</a>
-                    <a href="/index.php/?articleId=<?php echo $_GET['articleId'];?>&sort=desc">Nieuwste eerst</a>
+                    <a href="/index.php?articleId=<?php echo $_GET['articleId'];?>&sort=asc">Oudste eerst</a> |
+                    <a href="/index.php?articleId=<?php echo $_GET['articleId'];?>&sort=desc">Nieuwste eerst</a>
                 </header>
                 <main>
                     <h2>Reacties:</h2>
