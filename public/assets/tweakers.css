@@ -3,6 +3,16 @@ body {
     font-family: "arial","helvetica","Liberation Sans",sans-serif;
     background: #edeeee;
 }
+
+a {
+    color: #014a93;
+    text-decoration: none;
+}
+
+a:hover {
+    text-decoration: underline;
+}
+
 .wrapper {
     margin: 0 auto;
     width: 100%;
@@ -33,9 +43,12 @@ body {
     margin-bottom: 10px;
 }
 
+.sort {
+    font-size: 12px;
+}
+
 .sort div {
     margin-bottom: 5px;
-    font-size: 12px;
 }
 
 .content main h2 {
