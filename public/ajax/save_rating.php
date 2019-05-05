@@ -18,8 +18,8 @@ if (!isset($_POST['rating']) || !isset($_POST['commentId'])) {
     exit;
 }
 
-$rating = $_POST['rating'];
-$commentId = $_POST['commentId'];
+$rating = (int) $_POST['rating'];
+$commentId = (int) $_POST['commentId'];
 
 $commentThread = new CommentThread($adapter, $pdoConnection);
 

@@ -24,9 +24,9 @@ if (is_null($parentCommentId)) {
     //get the first comment
     $rootNode = $adapter->getNode($tree->root_node_id);
 
-    $adapter->setDescription($tree->root_node_id, $description);
-    $adapter->setArticleId($tree->root_node_id, $articleId);
-    $adapter->setUserId($tree->root_node_id, $userId);
+    $adapter->setDescription($tree->root_node_id, htmlspecialchars($description));
+    $adapter->setArticleId($tree->root_node_id, htmlspecialchars($articleId));
+    $adapter->setUserId($tree->root_node_id, htmlspecialchars($userId));
 
     echo 'Nieuw comment geplaatst onder artikel';
     die;
