@@ -1,5 +1,4 @@
-let ratingButton = document.getElementsByClassName('rate');
-
+// rate a comment when clicked on the corresponding comment & rating
 const rateComment = function() {
     let rating = this.getAttribute('data-rating');
     let parentElement = this.closest('.rating');
@@ -12,6 +11,7 @@ const rateComment = function() {
     }).catch(error => console.error(error));
 };
 
+//save the rating in the backend
 const saveRating = function(rating, commentId) {
     if (! rating || !commentId) {
         return false;
@@ -29,6 +29,8 @@ const saveRating = function(rating, commentId) {
     return fetch('/ajax/save_rating.php', options).then(response => response.json())
 };
 
+//add click-event listener on all the .rate-classes
+let ratingButton = document.getElementsByClassName('rate');
 Array.from(ratingButton).forEach(function(element) {
     element.addEventListener('click', rateComment);
 });
