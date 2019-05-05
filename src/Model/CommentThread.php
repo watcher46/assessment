@@ -30,9 +30,10 @@ class CommentThread
      * Get all comment threads based on the article-id
      *
      * @param int $articleId
+     * @param string $sortOrder
      * @return array
      */
-    public function getCommentThreads(int $articleId, string $sortOrder)
+    public function getCommentThreads(int $articleId, string $sortOrder): array
     {
         if ($sortOrder !== 'ASC' && $sortOrder !== 'DESC') {
             $sortOrder = 'ASC';
@@ -73,7 +74,7 @@ class CommentThread
      * @param int $commentId
      * @return float
      */
-    public function setScore(int $rating, int $commentId)
+    public function setScore(int $rating, int $commentId): float
     {
         $sql = "
             INSERT INTO " . self::COMMENT_SCORE_TABLE . "

@@ -53,7 +53,7 @@ class Article
      * @param string $sortOrder
      * @return array
      */
-    public function getComments(string $sortOrder)
+    public function getComments(string $sortOrder): array
     {
         if ($sortOrder !== 'ASC' && $sortOrder !== 'DESC') {
             $sortOrder = 'ASC';
