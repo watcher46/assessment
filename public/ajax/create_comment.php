@@ -12,11 +12,11 @@ use Tweakers\NestedSet\Node as Comment;
 
 $articleId = (isset($_GET['articleId']) && (int)$_GET['articleId'] > 0) ? (int)$_GET['articleId'] : 1;
 $parentCommentId = (isset($_GET['parent_comment_id']) && (int)$_GET['parent_comment_id'] > 0) ? (int)$_GET['parent_comment_id'] : null;
-$userId = rand(1, 4);
+$userId = rand(1, 4); //randomly use a user id
 $description = (string)$_GET['description'];
 
 if (is_null($parentCommentId)) {
-    //this indicates that the comment is placed at the root of the article
+    //this indicates that a new thread is started
 
     //create new comment-tree + the first comment
     $tree = $adapter->createTree(sha1(microtime()));
@@ -39,8 +39,8 @@ $commentData = [
 ];
 $comment = new Comment($commentData);
 if ($adapter->addChild($parentCommentId, $comment)) {
-    echo 'Nieuw commentaar geplaatst onder een ander commentaar met id: ' . $parentCommentId;
+    echo 'Nieuw commentaar geplaatst!';
 } else {
-    echo 'Toevoegen is niet gelukt.';
+    echo 'Commentaar toevoegen is niet gelukt.';
 }
 

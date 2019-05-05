@@ -49,22 +49,34 @@ class Node extends Model
      */
     public $depth;
 
-    /** @var int */
+    /**
+     * @var int
+     */
     public $article_id;
 
-    /** @var int */
+    /**
+     * @var int
+     */
     public $user_id;
 
-    /** @var string */
+    /**
+     * @var string
+     */
     public $user_name;
 
-    /** @var string */
+    /**
+     * @var string
+     */
     public $description;
 
-    /** @var string */
+    /**
+     * @var string
+     */
     public $date_created;
 
-    /** @var int */
+    /**
+     * @var int
+     */
     public $average_score;
 
     /**

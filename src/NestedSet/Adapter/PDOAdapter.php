@@ -1,10 +1,4 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: Johan
- * Date: 2015-05-28
- * Time: 22:36
- */
 
 namespace Tweakers\NestedSet\Adapter;
 
@@ -241,17 +235,21 @@ EOD;
     public function getAllChildren(int $nodeId): array
     {
         $parent = $this->getNode($nodeId);
-        $sql = <<<EOD
-select c.*, u.name as user_name, AVG(cs.score) as average_score
-from {$this->tablePrefix} c
-left join users as u on c.user_id = u.id
-left join {$this->tablePrefix}_score as cs on c.id = cs.comment_id
-where lft >= :left
-    and rgt <= :right
-    and tree_id = :tree_id
-group by c.id
-order by lft ASC
-EOD;
+
+        $sql = "
+            SELECT 
+                   c.*, 
+                   u.name AS user_name, 
+                   AVG(cs.score) AS average_score
+            FROM {$this->tablePrefix} AS c
+            LEFT JOIN users AS u ON c.user_id = u.id
+            LEFT JOIN {$this->tablePrefix}_score AS cs ON c.id = cs.comment_id
+            WHERE lft >= :left 
+            AND rgt <= :right 
+            AND tree_id = :tree_id
+            GROUP BY c.id
+            ORDER BY lft ASC
+        ";
 
         $stmt = $this->db->prepare($sql);
         $stmt->execute([
@@ -319,43 +317,6 @@ EOD;
     }
 
     /**
-     * Every root comment on an article is a new tree
-     * Therefore to render all comments for an article, all trees related to the article must be rendered
-     *
-     * @param int $articleId
-     * @return array
-     */
-    public function getAllTreesFromArticle(int $articleId)
-    {
-        $sql = <<<EOD
-select c.id
-from {$this->tablePrefix} as c
-left join {$this->tablePrefix}_tree as ct ON c.tree_id = ct.tree_id
-where c.article_id = :article_id
-and c.depth = :depth
-order by date_created asc
-EOD;
-
-        $stmt = $this->db->prepare($sql);
-        $stmt->execute([
-            ':depth' => Node::INITIAL_DEPTH,
-            ':article_id' => $articleId
-        ]);
-
-        $rootCommentIds = $stmt->fetchAll(PDO::FETCH_COLUMN);
-        if (empty($rootCommentIds)) {
-            throw new \RuntimeException("Trees with article id {$articleId} not found");
-        }
-
-        $trees = [];
-        foreach($rootCommentIds as $id) {
-            $trees[] = $this->getAllChildren($id);
-        }
-
-        return $trees;
-    }
-
-    /**
      * @param int $nodeId
      * @param int $targetParent
      * @return bool
@@ -399,33 +360,4 @@ EOD;
         return $r1 && $r2 && $r3;
     }
 
-    public function setScore(int $rating, int $commentId)
-    {
-        $sql = <<<EOD
-insert into {$this->tablePrefix}_score
-set
-    comment_id = :comment_id,
-    score = :score
-EOD;
-        $stmt = $this->db->prepare($sql);
-
-        $stmt->execute([
-            ':comment_id' => $commentId,
-            ':score' => $rating,
-        ]);
-
-        //after adding the new score, return the new average
-
-        $sql = <<<EOD
-select AVG(score) as score from {$this->tablePrefix}_score where comment_id = :comment_id group by comment_id
-EOD;
-        $stmt = $this->db->prepare($sql);
-
-        $stmt->execute([':comment_id' => $commentId]);
-
-        $row = $stmt->fetchColumn();
-
-        return ceil($row);
-
-    }
 }

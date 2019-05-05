@@ -8,7 +8,9 @@ include '../../autoloader.php';
 // vars $pdoConnection & $adapter are available
 include '../connection.php';
 
-//return only json responses
+use Tweakers\Model\CommentThread;
+
+//set header for json responses
 header('Content-Type: application/json;charset=utf-8');
 
 if (!isset($_POST['rating']) || !isset($_POST['commentId'])) {
@@ -19,4 +21,6 @@ if (!isset($_POST['rating']) || !isset($_POST['commentId'])) {
 $rating = $_POST['rating'];
 $commentId = $_POST['commentId'];
 
-echo json_encode(['result' => ['new_average' => $adapter->setScore($rating, $commentId)]]);
+$commentThread = new CommentThread($adapter, $pdoConnection);
+
+echo json_encode(['result' => ['new_average' => $commentThread->setScore($rating, $commentId)]]);
