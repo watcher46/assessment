@@ -74,7 +74,3 @@ localhost  comments.tweakers.test
 ```
 
 Your development environment should now be available on `https://comments.tweakers.test`
-
-## Known issues
-At the moment, the `www-data` user in the Apache container has a hardcoded ID of `502`.
-This is the default ID for Mac users. This setup is very likely not working on other OS-es.
