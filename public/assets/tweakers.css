@@ -21,6 +21,26 @@ body {
     line-height: 1.1;
 
 }
+
+.content header {
+    clear: both;
+}
+
+.content header.sort {
+    float:right;
+    width: 24%;
+    text-align: right;
+    margin-bottom: 10px;
+}
+
+.sort div {
+    margin-bottom: 5px;
+    font-size: 12px;
+}
+
+.content main h2 {
+    margin-bottom: 35px;
+}
 ul, li {
     list-style: none;
     display:block;
@@ -44,9 +64,19 @@ li.comment .comment-body {
 }
 
 .comment-body header {
+    display: flex;
+    flex: 1 0 auto;
+    flex-direction: row;
+    flex-wrap: wrap;
     margin: 10px;
     padding-bottom: 5px;
     border-bottom: 1px solid #d9d9d9;
+}
+
+.comment-body header .rating {
+    margin-left: auto;
+    align-self: center;
+    font-size: 12px;
 }
 .comment-body header .username {
     font-weight: bold;
@@ -61,7 +91,6 @@ li.comment .comment-body {
 }
 
 .comment-body header .id {
-    float: right;
     margin-right: 15px;
 }
 
@@ -73,4 +102,8 @@ li.comment .comment-body {
 
 .comment .comment {
     margin-left: 10px;
+}
+
+.rating {
+    text-align: right;
 }

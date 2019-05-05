@@ -28,7 +28,7 @@ $articleComments = $article->getComments();
             <section class="description"><?php echo htmlspecialchars($article->description);?></section>
             <section>
                 <header class="sort">
-                    <span>Sorteer threads op:</span>
+                    <div>Sorteer threads op:</div>
                     <button>Nieuwste eerst</button>
                     <button>Oudste eerst</button>
                 </header>
@@ -56,9 +56,12 @@ $articleComments = $article->getComments();
                                 $comment = "
                                     <div class=\"comment-body\">
                                         <header>
-                                            <span class='username'>{$node->user_name}</span>
-                                            <span class='date'>geplaatst op: {$commentCreated->format('d-m-Y H:i')}</span>
+                                            <span class='info'>
+                                                <span class='username'>{$node->user_name}</span>
+                                                <span class='date'>geplaatst op: {$commentCreated->format('d-m-Y H:i')}</span>
+                                            </span>
                                             <span data-comment-id='{$node->id}' class='rating'>
+                                                <span class='id'>id: {$node->id}</span>
                                                 <button data-rating='-1' class='rate min-one'>-1</button>
                                                 <button data-rating='0' class='rate zero'>0</button>
                                                 <button data-rating='1' class='rate plus-one'>+1</button>
@@ -66,7 +69,6 @@ $articleComments = $article->getComments();
                                                 <button data-rating='3' class='rate plus-three'>+3</button>
                                                 <span class='average'>Score: {$averageScore}</span>
                                             </span>
-                                            <span class='id'>id: {$node->id}</span>
                                         </header>
                                         <section>{$node->description}</section>
                                     </div>
