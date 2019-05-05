@@ -11,11 +11,19 @@ include 'connection.php';
 use Tweakers\Model\Article;
 
 $articleId = (int)$_GET['articleId'] ?: 1;
+$sortOrder = 'ASC';
+$sortMethods = ['ASC', 'DESC'];
+if (isset($_GET['sort']) && in_array(strtoupper($_GET['sort']), $sortMethods)) {
+    $sortOrder = strtoupper($_GET['sort']);
+}
 
-$article = new Article($articleId, $pdoConnection, $adapter);
-$articleComments = $article->getComments();
+try {
+    $article = new Article($articleId, $pdoConnection, $adapter);
+    $articleComments = $article->getComments($sortOrder);
+} catch (\Exception $e) {
+    die($e->getMessage());
+}
 ?>
-
 <html>
 <head>
     <title><?php echo htmlspecialchars($article->title);?> - Tweakers</title>
@@ -29,8 +37,8 @@ $articleComments = $article->getComments();
             <section>
                 <header class="sort">
                     <div>Sorteer threads op:</div>
-                    <button>Nieuwste eerst</button>
-                    <button>Oudste eerst</button>
+                    <button data-sort-type="desc" id="sort_ascending">Oudste eerst</button>
+                    <button data-sort-type="asc" id="sort_descending">Nieuwste eerst</button>
                 </header>
                 <main>
                     <h2>Reacties:</h2>

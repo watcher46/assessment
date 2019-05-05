@@ -32,15 +32,19 @@ class CommentThread
      * @param int $articleId
      * @return array
      */
-    public function getCommentThreads(int $articleId)
+    public function getCommentThreads(int $articleId, string $sortOrder)
     {
+        if ($sortOrder !== 'ASC' && $sortOrder !== 'DESC') {
+            $sortOrder = 'ASC';
+        }
+
         $sql = "
             SELECT c.id
             FROM " . self::COMMENT_TABLE . " AS c
             LEFT JOIN comments_tree AS ct ON c.tree_id = ct.tree_id
             WHERE c.article_id = :article_id
             AND c.depth = :depth
-            ORDER BY date_created ASC
+            ORDER BY date_created {$sortOrder}
         ";
 
         $stmt = $this->pdo->prepare($sql);

@@ -49,11 +49,18 @@ class Article
         }
     }
 
-    public function getComments()
+    /**
+     * @param string $sortOrder
+     * @return array
+     */
+    public function getComments(string $sortOrder)
     {
+        if ($sortOrder !== 'ASC' && $sortOrder !== 'DESC') {
+            $sortOrder = 'ASC';
+        }
         if (! $this->comments) {
             $commentTree = new CommentThread($this->adapter, $this->pdo);
-            $this->comments = $commentTree->getCommentThreads($this->id);
+            $this->comments = $commentTree->getCommentThreads($this->id, $sortOrder);
         }
 
         return $this->comments;
