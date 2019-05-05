@@ -2,18 +2,24 @@
 
 namespace Tweakers\Model;
 
-use Tweakers\NestedSet\Adapter\AdapterInterface;
+use Tweakers\Model\CommentThread;
 use PDO;
 use DateTime;
+use Tweakers\NestedSet\Adapter\PDOAdapter;
 
 
 class Article
 {
+    const ARTICLE_TABLE = "articles";
+
     /** @var string */
     protected $table = 'articles';
 
     /** @var PDO */
     protected $pdo;
+
+    /** @var PDOAdapter */
+    protected $adapter;
 
     /** @var bool */
     protected $isFetched = false;
@@ -30,23 +36,40 @@ class Article
     /** @var DateTime */
     public $dateCreated;
 
-    /** @var CommentCollection */
+    /** @var array */
     public $comments;
 
-    public function __construct(int $id, PDO $pdo)
+    public function __construct(int $id, PDO $pdo, PDOAdapter $adapter)
     {
         $this->pdo = $pdo;
+        $this->adapter = $adapter;
         $this->id = $id;
         if (!$this->fetchArticle()) {
             throw new \Exception("Article cannot be found.");
         }
     }
 
+    public function getComments()
+    {
+        if (! $this->comments) {
+            $commentTree = new CommentThread($this->adapter, $this->pdo);
+            $this->comments = $commentTree->getCommentThreads($this->id);
+        }
+
+        return $this->comments;
+    }
+
     protected function fetchArticle(): bool
     {
-        $stmt = $this->pdo->prepare("SELECT * FROM {$this->table} WHERE id=:id");
+        $sql = "
+            SELECT * 
+            FROM " . self::ARTICLE_TABLE . " 
+            WHERE id=:id
+        ";
+        $stmt = $this->pdo->prepare($sql);
         $stmt->execute(['id' => $this->id]);
         $result = $stmt->fetch();
+
         if (! $result) {
             return false;
         }

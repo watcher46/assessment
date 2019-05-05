@@ -12,8 +12,8 @@ use Tweakers\Model\Article;
 
 $articleId = (int)$_GET['articleId'] ?: 1;
 
-$article = new Article($articleId, $pdoConnection);
-$trees = $adapter->getAllTreesFromArticle($articleId);
+$article = new Article($articleId, $pdoConnection, $adapter);
+$articleComments = $article->getComments();
 ?>
 
 <html>
@@ -27,10 +27,14 @@ $trees = $adapter->getAllTreesFromArticle($articleId);
             <header class="title"><h1><?php echo htmlspecialchars($article->title);?></h1></header>
             <section class="description"><?php echo htmlspecialchars($article->description);?></section>
             <section>
-                <header class="sort"></header>
+                <header class="sort">
+                    <span>Sorteer threads op:</span>
+                    <button>Nieuwste eerst</button>
+                    <button>Oudste eerst</button>
+                </header>
                 <main>
                     <h2>Reacties:</h2>
-                    <?php foreach($trees as $key => $tree): ?>
+                    <?php foreach($articleComments as $key => $tree): ?>
                         <ul class="comments">
                         <?php
                             $currDepth = 0;
@@ -72,6 +76,7 @@ $trees = $adapter->getAllTreesFromArticle($articleId);
                                 $currDepth = $node->depth;
                             }
 
+                            //close all open li/ul's
                             if ($currDepth > 0) {
                                 while($currDepth >= 0) {
                                     echo "</li></ul>";
