@@ -7,7 +7,7 @@
  http:localhost:8080                // for docker-for-mac
  http://comments.tweakers.test:8080 // for docker-toolbox
  ```
-- Credentials can be found in the docker-compose file.
+- Credentials can be found in the docker-compose file. The database server is `db`. 
 - Import the sql from `./db/tweakers.sql` into the database.
 - Open a new browser and go to: `https:/localhost/index.php?articleId=1` or `https://comments.tweakers.test/index.php?articleId=1`
 
